@@ -1,4 +1,4 @@
-# @jogi/reports — Report Generation Library
+# @edictus/reports — Report Generation Library
 
 PDF generation, HTML report templates, formatting utilities, and report schemas.
 Extracted from [jogi](../jogi) to isolate report rendering complexity and enable independent testing.
@@ -38,8 +38,8 @@ src/
 1. **File naming** → lowercase, no hyphens/underscores (e.g., `pdfutils.ts`)
 2. **No `@/` imports** → all imports are relative within `src/`
 3. **Two entry points**:
-   - `@jogi/reports` — main (pdf, utils, styles, types)
-   - `@jogi/reports/schemas` — report schemas only
+   - `@edictus/reports` — main (pdf, utils, styles, types)
+   - `@edictus/reports/schemas` — report schemas only
 4. **No domain logic** — no hardcoded report content or field names. All structure comes from schemas/props
 5. **API stability** — exported function signatures must stay backward-compatible with jogi. Breaking changes require updating jogi's report generation code
 6. **README.md maintenance** — update this CLAUDE.md when key behaviors change
@@ -63,7 +63,7 @@ Use `npx tsc --noEmit` for fast type checking. Run `npm run build` to verify bun
 
 Consumed by jogi via GitHub reference:
 ```json
-"@jogi/reports": "github:luvidal/jogi-reports#main"
+"@edictus/reports": "github:luvidal/edictus-reports#<40-char-sha>"
 ```
 
 Primary consumer: `~/GitHub/jogi` — see its `pages/api/` for usage context.
