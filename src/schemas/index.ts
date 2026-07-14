@@ -112,7 +112,8 @@ export type ReportSchema = {
     label: string
     description: string
     sections: Record<string, SchemaSection>
-    required_documents: {
+    /** Optional — the bundled `renta` schema has no `required_documents` block. */
+    required_documents?: {
         per_person?: string[]
         optional_per_person?: string[]
         shared?: string[]
@@ -159,18 +160,23 @@ export function getRequiredDocuments(schema: ReportSchema): {
     shared: string[]
     incomeSources: string[]
 } {
-    const perPerson = new Set<string>(schema.required_documents.per_person || [])
-    const shared = new Set<string>(schema.required_documents.shared || [])
+    // `required_documents` is optional in practice — the bundled `renta` schema
+    // omits it entirely, and a host schema may too. Treat absent as empty rather
+    // than throwing; sections are still scanned below.
+    const required = schema.required_documents ?? {}
+
+    const perPerson = new Set<string>(required.per_person || [])
+    const shared = new Set<string>(required.shared || [])
     const incomeSources = new Set<string>()
 
     // Add optional per-person docs
-    if (schema.required_documents.optional_per_person) {
-        schema.required_documents.optional_per_person.forEach(d => perPerson.add(d))
+    if (required.optional_per_person) {
+        required.optional_per_person.forEach(d => perPerson.add(d))
     }
 
     // Add income source docs
-    if (schema.required_documents.income_sources?.one_of) {
-        schema.required_documents.income_sources.one_of.forEach(source => {
+    if (required.income_sources?.one_of) {
+        required.income_sources.one_of.forEach(source => {
             source.documents.forEach(d => incomeSources.add(d))
         })
     }
@@ -179,7 +185,7 @@ export function getRequiredDocuments(schema: ReportSchema): {
     for (const section of Object.values(schema.sections)) {
         if (section.source_doctypes) {
             section.source_doctypes.forEach(d => {
-                if (section.applies_to.includes('shared')) {
+                if (section.applies_to?.includes('shared')) {
                     shared.add(d)
                 } else {
                     perPerson.add(d)
@@ -198,14 +204,14 @@ export function getRequiredDocuments(schema: ReportSchema): {
 
         for (const field of Object.values(allFields || {})) {
             if (field.source?.doctype) {
-                if (section.applies_to.includes('shared')) {
+                if (section.applies_to?.includes('shared')) {
                     shared.add(field.source.doctype)
                 } else {
                     perPerson.add(field.source.doctype)
                 }
             }
             if (field.fallback?.doctype) {
-                if (section.applies_to.includes('shared')) {
+                if (section.applies_to?.includes('shared')) {
                     shared.add(field.fallback.doctype)
                 } else {
                     perPerson.add(field.fallback.doctype)
@@ -218,7 +224,7 @@ export function getRequiredDocuments(schema: ReportSchema): {
             for (const subsection of Object.values(section.subsections)) {
                 for (const field of Object.values(subsection.fields || {})) {
                     if (field.source?.doctype) {
-                        if (section.applies_to.includes('shared')) {
+                        if (section.applies_to?.includes('shared')) {
                             shared.add(field.source.doctype)
                         } else {
                             perPerson.add(field.source.doctype)

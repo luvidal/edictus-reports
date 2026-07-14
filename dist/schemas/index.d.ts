@@ -111,7 +111,8 @@ type ReportSchema = {
     label: string;
     description: string;
     sections: Record<string, SchemaSection>;
-    required_documents: {
+    /** Optional — the bundled `renta` schema has no `required_documents` block. */
+    required_documents?: {
         per_person?: string[];
         optional_per_person?: string[];
         shared?: string[];

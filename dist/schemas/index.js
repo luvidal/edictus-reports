@@ -73,21 +73,22 @@ function getReportSchema(reportId) {
   return schemas[reportId] || null;
 }
 function getRequiredDocuments(schema) {
-  const perPerson = new Set(schema.required_documents.per_person || []);
-  const shared = new Set(schema.required_documents.shared || []);
+  const required = schema.required_documents ?? {};
+  const perPerson = new Set(required.per_person || []);
+  const shared = new Set(required.shared || []);
   const incomeSources = /* @__PURE__ */ new Set();
-  if (schema.required_documents.optional_per_person) {
-    schema.required_documents.optional_per_person.forEach((d) => perPerson.add(d));
+  if (required.optional_per_person) {
+    required.optional_per_person.forEach((d) => perPerson.add(d));
   }
-  if (schema.required_documents.income_sources?.one_of) {
-    schema.required_documents.income_sources.one_of.forEach((source) => {
+  if (required.income_sources?.one_of) {
+    required.income_sources.one_of.forEach((source) => {
       source.documents.forEach((d) => incomeSources.add(d));
     });
   }
   for (const section of Object.values(schema.sections)) {
     if (section.source_doctypes) {
       section.source_doctypes.forEach((d) => {
-        if (section.applies_to.includes("shared")) {
+        if (section.applies_to?.includes("shared")) {
           shared.add(d);
         } else {
           perPerson.add(d);
@@ -103,14 +104,14 @@ function getRequiredDocuments(schema) {
     };
     for (const field of Object.values(allFields || {})) {
       if (field.source?.doctype) {
-        if (section.applies_to.includes("shared")) {
+        if (section.applies_to?.includes("shared")) {
           shared.add(field.source.doctype);
         } else {
           perPerson.add(field.source.doctype);
         }
       }
       if (field.fallback?.doctype) {
-        if (section.applies_to.includes("shared")) {
+        if (section.applies_to?.includes("shared")) {
           shared.add(field.fallback.doctype);
         } else {
           perPerson.add(field.fallback.doctype);
@@ -121,7 +122,7 @@ function getRequiredDocuments(schema) {
       for (const subsection of Object.values(section.subsections)) {
         for (const field of Object.values(subsection.fields || {})) {
           if (field.source?.doctype) {
-            if (section.applies_to.includes("shared")) {
+            if (section.applies_to?.includes("shared")) {
               shared.add(field.source.doctype);
             } else {
               perPerson.add(field.source.doctype);
