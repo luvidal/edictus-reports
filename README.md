@@ -2,9 +2,11 @@
 
 # @edictus/reports
 
-Formatting helpers and report schemas shared by the credit-analysis report
-packages ([`informe`](https://github.com/luvidal/edictus-informe),
-[`tables`](https://github.com/luvidal/edictus-tables)).
+**English** · [Español](README.es.md)
+
+Formatting helpers and report schemas shared by the credit-analysis packages
+([`informe`](https://github.com/luvidal/edictus-informe) and the income math in
+[`edictus-document-ai`](https://github.com/luvidal/edictus-document-ai)).
 
 ## What's inside
 
